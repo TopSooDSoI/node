@@ -3261,12 +3261,6 @@ static void DebugEnd(const FunctionCallbackInfo<Value>& args);
 
 namespace {
 
-void ActivateImmediateCheck(const FunctionCallbackInfo<Value>& args) {
-  Environment* env = Environment::GetCurrent(args);
-  env->ActivateImmediateCheck();
-}
-
-
 void StartProfilerIdleNotifier(const FunctionCallbackInfo<Value>& args) {
   Environment* env = Environment::GetCurrent(args);
   env->StartProfilerIdleNotifier();
@@ -3490,12 +3484,6 @@ void SetupProcessObject(Environment* env,
                              FIXED_ONE_BYTE_STRING(env->isolate(), "ppid"),
                              GetParentProcessId).FromJust());
 
-  auto scheduled_immediate_count =
-      FIXED_ONE_BYTE_STRING(env->isolate(), "_scheduledImmediateCount");
-  CHECK(process->Set(env->context(),
-                     scheduled_immediate_count,
-                     env->scheduled_immediate_count().GetJSArray()).FromJust());
-
   auto should_abort_on_uncaught_toggle =
       FIXED_ONE_BYTE_STRING(env->isolate(), "_shouldAbortOnUncaughtToggle");
   CHECK(process->Set(env->context(),
@@ -3627,9 +3615,6 @@ void SetupProcessObject(Environment* env,
                              env->as_external()).FromJust());
 
   // define various internal methods
-  env->SetMethod(process,
-                 "_activateImmediateCheck",
-                 ActivateImmediateCheck);
   env->SetMethod(process,
                  "_startProfilerIdleNotifier",
                  StartProfilerIdleNotifier);
